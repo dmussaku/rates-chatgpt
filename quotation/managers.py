@@ -34,8 +34,7 @@ class QuoteManager(models.Manager):
         container_info = {obj["type"]: obj["amount"] for obj in containers}
 
         main_rates = MainRate.objects.filter(
-            pol__in=pols, pod__in=pods,
-            container_type__in=container_info.keys()
+            pol__in=pols, pod__in=pods, container_type__in=container_info.keys()
         )
         for main_rate in main_rates:
             quote_option = quote.options.create()
@@ -45,7 +44,8 @@ class QuoteManager(models.Manager):
             )
             if is_dangerous:
                 surcharge = Surcharge.objects.get(
-                    carrier_id=main_rate.carrier_id, surcharge_type=SurchargeTypes.DANGEROUS_GOODS
+                    carrier_id=main_rate.carrier_id,
+                    surcharge_type=SurchargeTypes.DANGEROUS_GOODS,
                 )
                 quote_option.line_items.create(
                     content_object=surcharge,

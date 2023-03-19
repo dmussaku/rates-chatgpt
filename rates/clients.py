@@ -56,5 +56,5 @@ class OpenAIClient(object):
         text = response.choices[0]["text"].replace("\n", "")
         if text.startswith("Answer:"):
             text = text.strip("Answer:")
-        
+
         return json.loads(text.strip())

@@ -8,10 +8,7 @@ from django.db.models import Q
 
 class PortManager(models.Manager):
     def get_queryset(self):
-        return (
-            super()
-            .get_queryset()
-        )
+        return super().get_queryset()
 
     def filter_by_params(
         self, code: str = None, name: str = None, country_code: str = None
