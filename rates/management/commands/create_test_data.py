@@ -84,7 +84,7 @@ class Command(BaseCommand):
             **{"code": "CNLYG", "country_code": "CN", "name": "Port of Lianyungang"}
         )
 
-        print("Craeted ports: ", Port.objects.count())
+        self.stdout.write("Created ports: ", Port.objects.count())
 
     def generate_main_rates(self):
         with transaction.atomic():
@@ -99,7 +99,7 @@ class Command(BaseCommand):
                         pol=pol,
                         pod=pod,
                     )
-        print("Created main rates: ", MainRate.objects.count())
+        self.stdout.write("Created main rates: ", MainRate.objects.count())
 
     def generate_surcharges(self):
         # generate surcharges for every container type and carrier
@@ -111,7 +111,7 @@ class Command(BaseCommand):
                 carrier_id=carrier_id,
                 surcharge_type=surcharge_type,
             )
-        print("Created surcharges: ", Surcharge.objects.count())
+        self.stdout.write("Created surcharges: ", Surcharge.objects.count())
 
     def handle(self, *args, **options):
         with transaction.atomic():

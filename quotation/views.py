@@ -1,6 +1,7 @@
 # create a TemplateView called QuoteView in quotation app
 
 # app/quotation/views.py
+import json
 
 from django.views.generic import TemplateView
 from quotation.models import Quote

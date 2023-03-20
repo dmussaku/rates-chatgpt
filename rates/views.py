@@ -45,13 +45,8 @@ class ChatView(FormView):
         # }
 
         quote = Quote.objects.create_quote(
+            text,
             chat_response,
-            chat_response["pol"],
-            chat_response["pod"],
-            chat_response["containers"],
-            chat_response.get("is_dangerous", False),
-            chat_response.get("is_hazardous", False),
-            chat_response.get("is_customs_needed", False),
         )
         return HttpResponseRedirect(
             reverse("quotation:quote", kwargs={"quote_id": quote.id})
