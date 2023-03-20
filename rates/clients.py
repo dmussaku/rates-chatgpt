@@ -18,9 +18,6 @@ class OpenAIClient(object):
         Context:
         We are a global logistics company that transports containers over sea.
         Return me only a json with the following format:
-            - is_dangerous: boolean field, false by default. Dangerous goods are considered dangerous when transporting via sea.
-            - is_hazardous: boolean field, false by default. Hazardous materials such as explosives, flammable liquids and gases, and toxic substances are considered dangerous when transporting via sea.
-            - is_customs_needed: boolean field, false by default. Indicate whether any of the goods require customs clearance.
             - pol: Find the closest sea port of leave and return an object of the following format:
                 - name: name of the port
                 - code: UN/LOCODE of the port
@@ -33,6 +30,10 @@ class OpenAIClient(object):
                 - amount: integer Amount of containers, 1 by default
                 - type: string enumerated from the following values: {container_types}. {default_container_type} by default
                 - goods_names: Array of strings. names of the goods. [] by default
+                - is_dangerous: boolean field, false by default. Dangerous goods are considered dangerous when transporting via sea.
+                - is_hazardous: boolean field, false by default. Hazardous materials such as explosives, flammable liquids and gases, and toxic substances are considered dangerous when transporting via sea.
+                - is_customs_needed: boolean field, false by default. Indicate whether any of the goods require customs clearance.
+                - is_fragile: boolean field, false by default. Indicate whether any of the goods are fragile.
 
             Don't add any other fields to the json sturcture from the question. Make sure the structure from the context is maintained.
         """

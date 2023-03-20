@@ -10,8 +10,8 @@ class BaseRate(models.Model):
     price = models.DecimalField(
         max_digits=19, decimal_places=2, verbose_name="Rate price"
     )
-    valid_from = models.DateTimeField()
-    valid_until = models.DateTimeField()
+    valid_from = models.DateField()
+    valid_until = models.DateField()
 
     class Meta:
         abstract = True
@@ -65,6 +65,7 @@ class MainRate(BaseRate):
 class SurchargeTypes(models.TextChoices):
     DANGEROUS_GOODS = "danger", _("Surcharge for Dangerous Goods")
     CUSTOMS_FEE = "customs", _("Surcharge for Customs Fee")
+    FRAGILE_FEE = "fragile", _("Surcharge for Fragile Goods")
 
 
 class Surcharge(BaseRate):

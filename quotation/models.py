@@ -27,9 +27,7 @@ class Quote(models.Model):
         pol = self.search_params["pol"]
         pod = self.search_params["pod"]
         containers = self.search_params["containers"]
-        is_dangerous = self.search_params.get("is_dangerous", False)
-        is_hazardous = self.search_params.get("is_hazardous", False)
-        is_customs_needed = self.search_params.get("is_customs_needed", False)
+
 
         pols = Port.objects.filter_by_params(**pol)[:3]
         pods = Port.objects.filter_by_params(**pod)[:3]
@@ -39,33 +37,50 @@ class Quote(models.Model):
         ).values_list('pol', 'pod', 'carrier_id').distinct()
 
         for pol, pod, carrier_id in pol_pod_carrier_ids.distinct():
+            print (pol, pod, carrier_id)
             main_rates = MainRate.objects.filter(pol=pol, pod=pod, carrier_id=carrier_id, container_type__in=container_info.keys())
             quote_option = self.options.create()
 
-            for main_rate in main_rates:
+            for container in containers:
+                print(main_rates)
+                main_rate = main_rates.get(container_type=container["type"])
                 quote_option.line_items.create(
                     content_object=main_rate,
-                    quantity=container_info[main_rate.container_type],
+                    quantity=container['amount'],
+                    goods=','.join(container['goods_names']),
                 )
-            if is_dangerous:
-                surcharge = Surcharge.objects.get(
-                    carrier_id=main_rate.carrier_id,
-                    surcharge_type=SurchargeTypes.DANGEROUS_GOODS,
-                )
-                quote_option.line_items.create(
-                    content_object=surcharge,
-                    quantity=1,
-                )
+                if container.get("is_dangerous", False):
+                    surcharge = Surcharge.objects.get(
+                        carrier_id=main_rate.carrier_id,
+                        surcharge_type=SurchargeTypes.DANGEROUS_GOODS,
+                    )
+                    quote_option.line_items.create(
+                        content_object=surcharge,
+                        quantity=container['amount'],
+                        goods=','.join(container['goods_names']),
+                    )
 
-            if is_customs_needed:
-                surcharge = Surcharge.objects.get(
-                    carrier_id=main_rate.carrier_id,
-                    surcharge_type=SurchargeTypes.CUSTOMS_FEE,  
-                )
-                quote_option.line_items.create(
-                    content_object=surcharge,
-                    quantity=1,
-                )
+                if container.get("is_customs_needed", False):
+                    surcharge = Surcharge.objects.get(
+                        carrier_id=main_rate.carrier_id,
+                        surcharge_type=SurchargeTypes.CUSTOMS_FEE,  
+                    )
+                    quote_option.line_items.create(
+                        content_object=surcharge,
+                        quantity=container['amount'],
+                        goods=','.join(container['goods_names']),
+                    )
+                if container.get("is_fragile", False):
+                    surcharge = Surcharge.objects.get(
+                        carrier_id=main_rate.carrier_id,
+                        surcharge_type=SurchargeTypes.FRAGILE_FEE,
+                    )
+                    quote_option.line_items.create(
+                        content_object=surcharge,
+                        quantity=container['amount'],
+                        goods=','.join(container['goods_names']),
+                    )
+                
 
 class QuoteOption(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -90,6 +105,7 @@ class QuoteLineItem(models.Model):
         QuoteOption, on_delete=models.CASCADE, related_name="line_items"
     )
     quantity = models.PositiveIntegerField()
+    goods = models.TextField(null=True, blank=True)
 
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
