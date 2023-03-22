@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.urls import reverse
+from django.utils.html import format_html
 
 # Register models in quotation app
 
@@ -15,7 +16,7 @@ class QuoteAdmin(admin.ModelAdmin):
     
     @admin.display
     def quote_url(self, obj):
-        return reverse("quotation:quote", args=[obj.id])
+        return format_html("<a href='{url}'>{url}</a>".format(url=reverse("quotation:quote", args=[obj.id])))
 
 
 admin.site.register(Quote, QuoteAdmin)
